@@ -8,7 +8,9 @@ io.configure(function () {
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10); 
 });
-app.listen(80);
+
+var port = process.env.PORT || 80;
+app.listen(port);
 
 // server up the index page
 function handler (req, res) {
