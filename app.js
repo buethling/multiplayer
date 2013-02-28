@@ -27,7 +27,7 @@ var rectangles = new HashMap();
 // handles socket stuff
 io.sockets.on('connection', function (socket) {
   // init
-  newRect = {'id': socket.id, 'loc': {'x': 100, 'y': 100} };
+  newRect = {'id': socket.id, 'name': 'Chris', 'loc': {'x': 100, 'y': 100} };
   socket.emit('init', { 'newRect': newRect, 'rectangles': rectangles._data });
   rectangles.set(socket.id, newRect);
   socket.broadcast.emit('update', rectangles._data);

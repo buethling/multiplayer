@@ -17,7 +17,8 @@
 	// init
 	var rectangles = new HashMap(),
 		myId, cx, cy,
-		tile_size = 10;
+		tile_size = 10,
+		name;
 
 	// handle arrow key presses
 	$(document).bind("keydown", function (e) {
@@ -56,11 +57,15 @@
 		// draw others
 		rectangles.forEach(function (value, key) {
 			if (value.id != myId) {
+				ctx.fillStyle = "black";
 				ctx.fillRect(value.loc.x, value.loc.y, tile_size, tile_size);
 			}
 		});
 
 		// draw me
+		ctx.fillStyle = "black";
+		ctx.fillText("Me", x - 2, y - 3);
+		ctx.fillStyle = "red";
 		ctx.fillRect(x, y, tile_size, tile_size);
 	}
 
@@ -74,6 +79,8 @@
 		cx = data.newRect.loc.x;
 		cy = data.newRect.loc.y;
 		rectangles._data = data.rectangles;
+
+		name = data.newRect.name;
 		
   		draw(cx, cy);
 	});
