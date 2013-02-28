@@ -2,6 +2,7 @@
 <canvas id="canvas" height="500" width="1000"></canvas>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="/hashmap.js"></script>
 <script>
 	var socket = io.connect(window.location.hostname);
 	var canvas = document.getElementById('canvas');
@@ -11,80 +12,66 @@
 	$(canvas).css({'border':'1px solid black'});
 	
 	// init
-	var rectangles = [],
+	var rectangles = new HashMap(),
 		myId, cx, cy,
 		tile_size = 10;
 
-	$(document).bind("keydown", function(e) {
+	// handle arrow key presses
+	$(document).bind("keydown", function (e) {
 	    switch(e.keyCode)
 	    {
 	    	//left
 	        case 37:
-                //ctx.clearRect(0, 0, canvas.width, canvas.height);
-                //ctx.fillRect(cx - tile_size, cy, tile_size, tile_size);
                 draw(cx - tile_size, cy);
                 cx -= tile_size;
 	        	break;
-	            
 	        //up
 	        case 38:
-                //ctx.clearRect(0, 0, canvas.width, canvas.height);
-                //ctx.fillRect(cx, cy - tile_size, tile_size, tile_size);
                 draw(cx, cy - tile_size);
                 cy -= tile_size;
 	        	break;
-	            
 	        //right
 	        case 39:
-                //ctx.clearRect(0, 0, canvas.width, canvas.height);
-                //ctx.fillRect(cx + tile_size, cy, tile_size, tile_size);
                 draw(cx + tile_size, cy);
                 cx += tile_size;
 	        	break;
-	        
 	        //down
 	        case 40:
-                //ctx.clearRect(0, 0, canvas.width, canvas.height);
-                //draw(cx, cy + tile_size, tile_size, tile_size);
                 draw(cx, cy + tile_size);
                 cy += tile_size;
 	        	break;
 	    }
 
-	    // {'id': count, 'loc': {'x': 100, 'y': 100} }
+	    // tell the server we've moved
 	    socket.emit('move', { 'id': myId, 'loc': { 'x': cx, 'y': cy } });
 	});
 
-	function draw(x, y) {
+	function draw (x, y) {
 		// clear the canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		// draw others
-		for (var i=0; i < rectangles.length; i++) {
-			if (rectangles[i].id != myId) {
-				//console.log("x: " + rectangles[i].loc.x + " y: " + rectangles[i].loc.y);
-				ctx.fillRect(rectangles[i].loc.x, rectangles[i].loc.y, tile_size, tile_size);
+		rectangles.forEach(function (value, key) {
+			if (value.id != myId) {
+				ctx.fillRect(value.loc.x, value.loc.y, tile_size, tile_size);
 			}
-		}
+		});
 
 		// draw me
 		ctx.fillRect(x, y, tile_size, tile_size);
 	}
 
-	socket.on('update', function(data) {
-        rectangles = data;
+	socket.on('update', function (data) {
+        rectangles._data = data;
         draw(cx, cy);
 	});
 
-	socket.on('init', function(data) {
+	socket.on('init', function (data) {
 		myId = data.newRect.id;
 		cx = data.newRect.loc.x;
 		cy = data.newRect.loc.y;
-		//console.log("id: " + myId + " cx: " + cx + " cy: " + cy);
-
-		rectangles = data.rectangles;
-		//newRect = {'id': count, 'loc': {'x': 100, 'y': 100} };
-  		//socket.emit('init', { 'newRect': newRect, 'rectangles': rectangles });
+		rectangles._data = data.rectangles;
+		
   		draw(cx, cy);
 	});
 </script>
