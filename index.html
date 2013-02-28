@@ -4,7 +4,10 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/hashmap.js"></script>
 <script>
-	var socket = io.connect(window.location.hostname);
+	var opts = {};
+	opts['sync disconnect on unload'] = true;
+	var socket = io.connect(window.location.hostname, opts);
+
 	var canvas = document.getElementById('canvas');
 	var ctx = canvas.getContext('2d');
 
