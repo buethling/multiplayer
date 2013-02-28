@@ -6,8 +6,8 @@ var app = require('express')()
 // assuming io is the Socket.IO server object
 io.configure(function () { 
   io.set('log level', 1);
-  //io.set("transports", ["xhr-polling"]); 
-  //io.set("polling duration", 10); 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
 });
 
 var port = process.env.PORT || 80;
