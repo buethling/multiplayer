@@ -1,5 +1,5 @@
 <html>
-<canvas id="canvas" height="500" width="1000"></canvas>
+<canvas id="canvas" height="720" width="1280"></canvas>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -25,27 +25,24 @@
 	    {
 	    	//left
 	        case 37:
-                draw(cx - tile_size, cy);
-                cx -= tile_size;
+	        	cx = (cx - tile_size < 0) ? canvas.width : cx - tile_size;
 	        	break;
 	        //up
 	        case 38:
-                draw(cx, cy - tile_size);
-                cy -= tile_size;
+	        	cy = (cy - tile_size < 0) ? canvas.height : cy - tile_size;
 	        	break;
 	        //right
 	        case 39:
-                draw(cx + tile_size, cy);
-                cx += tile_size;
+	        	cx = (cx + tile_size > canvas.width) ? 0 : cx + tile_size;
 	        	break;
 	        //down
 	        case 40:
-                draw(cx, cy + tile_size);
-                cy += tile_size;
+	        	cy = (cy + tile_size > canvas.height) ? 0 : cy + tile_size;
 	        	break;
 	    }
 
-	    // tell the server we've moved
+	    // draw and tell the server we've moved
+	    draw(cx, cy);
 	    socket.emit('move', { 'id': myId, 'loc': { 'x': cx, 'y': cy } });
 	});
 
