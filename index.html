@@ -2,7 +2,6 @@
 <canvas id="canvas" height="500" width="1000"></canvas>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/hashmap.js"></script>
 <script>
 	var opts = {};
 	opts['sync disconnect on unload'] = true;
@@ -15,7 +14,7 @@
 	$(canvas).css({'border':'1px solid black'});
 	
 	// init
-	var rectangles = new HashMap(),
+	var rectangles = {},
 		myId, cx, cy,
 		tile_size = 10,
 		name;
@@ -55,22 +54,23 @@
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		// draw others
-		rectangles.forEach(function (value, key) {
-			if (value.id != myId) {
+		for (var i in rectangles) {
+			console.log(i);
+			if (rectangles.hasOwnProperty(i) && rectangles[i].id != myId) {
 				ctx.fillStyle = "black";
-				ctx.fillRect(value.loc.x, value.loc.y, tile_size, tile_size);
+				ctx.fillRect(rectangles[i].loc.x, rectangles[i].loc.y, tile_size, tile_size);
 			}
-		});
+		}
 
 		// draw me
 		ctx.fillStyle = "black";
-		ctx.fillText("Me", x - 2, y - 3);
+		ctx.fillText(name, x - 2, y - 3);
 		ctx.fillStyle = "red";
 		ctx.fillRect(x, y, tile_size, tile_size);
 	}
 
 	socket.on('update', function (data) {
-        rectangles._data = data;
+        rectangles = data;
         draw(cx, cy);
 	});
 
@@ -78,7 +78,7 @@
 		myId = data.newRect.id;
 		cx = data.newRect.loc.x;
 		cy = data.newRect.loc.y;
-		rectangles._data = data.rectangles;
+		rectangles = data.rectangles;
 
 		name = data.newRect.name;
 		
